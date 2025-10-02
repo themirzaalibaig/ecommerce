@@ -7,7 +7,7 @@ dotenv.config();
 // Load environment variables
 import { logger } from './utils/logger';
 import { rateLimitConfig } from './middleware';
-import { connectDB } from './config/database';
+// import { connectDB } from './config/database';
 import { authRoutes } from './routes';
 
 
@@ -46,8 +46,9 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, async () => {
-  await connectDB();
+  // await connectDB();
   logger.info(`Server is running on port ${PORT}`);
   logger.info(`API Version: ${API_VERSION}`);
   logger.info(`Health check: http://localhost:${PORT}/health`);
 });
+//

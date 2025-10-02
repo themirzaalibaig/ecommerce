@@ -1,22 +1,22 @@
 import { UserModel } from '../models/user.model';
 import { Request, Response } from 'express';
 import { createValidationError, ResponseUtil } from '../utils/response';
-import { generateToken } from '@config/jwt';
+import { generateToken } from '../config/jwt';
 
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, phone, password, image } = req.body;
 
     const emailExists = await UserModel.findOne({ email });
     if (emailExists) {
-      return ResponseUtil.badRequest(res, 'Email already exists', [
+      ResponseUtil.badRequest(res, 'Email already exists', [
         createValidationError('email', 'Email already exists'),
       ]);
     }
 
     const phoneExists = await UserModel.findOne({ phone });
     if (phoneExists) {
-      return ResponseUtil.badRequest(res, 'Phone number already exists', [
+      ResponseUtil.badRequest(res, 'Phone number already exists', [
         createValidationError('phone', 'Phone number already exists'),
       ]);
     }
@@ -34,20 +34,22 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email });
     if (!user) {
-      return ResponseUtil.badRequest(res, 'User not found', [
+      ResponseUtil.badRequest(res, 'User not found', [
         createValidationError('email', 'User not found'),
       ]);
+      return;
     }
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) {
-      return ResponseUtil.badRequest(res, 'Invalid password', [
+      ResponseUtil.badRequest(res, 'Invalid password', [
         createValidationError('password', 'Invalid password'),
       ]);
+      return;
     }
     const token = generateToken({
       userId: user._id.toString(),
