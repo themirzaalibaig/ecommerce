@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import { logger } from './utils/logger';
 import { rateLimitConfig } from './middleware';
 import { connectDB } from './config/database';
+import { authRoutes } from './routes';
 
 // Load environment variables
 dotenv.config();
@@ -29,7 +30,7 @@ app.use(rateLimitConfig.general);
 connectDB();
 
 // Routes
-
+app.use(API_PREFIX, authRoutes);
 
 
 
