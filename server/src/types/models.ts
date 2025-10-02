@@ -1,0 +1,51 @@
+export interface BaseModel {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum Role {
+  ADMIN = 'admin',
+  USER = 'user',
+}
+
+export enum Size {
+  XS = 'xs',
+  S = 's',
+  M = 'm',
+  L = 'l',
+  XL = 'xl',
+}
+
+export interface User extends BaseModel {
+  username: string;
+  email: string;
+  phone: string;
+  password: string;
+  role: Role;
+  isActive: boolean;
+  image: string;
+}
+
+export interface Category extends BaseModel {
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+}
+
+
+export interface Product extends BaseModel {
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  tags: string[];
+  thumbnail: string;
+  images: string[];
+  stock: number;
+  category: Category;
+  size: Size[];
+  inStock: boolean;
+  totalStock: number;
+  totalSold: number;
+}
