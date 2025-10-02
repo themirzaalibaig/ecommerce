@@ -109,12 +109,12 @@ productSchema.virtual('reviews', {
 });
 
 // Indexes
-productSchema.index({ slug: 1 });
-productSchema.index({ name: 'text', description: 'text', tags: 'text' });
-productSchema.index({ category: 1 });
-productSchema.index({ price: 1 });
-productSchema.index({ inStock: 1 });
-productSchema.index({ createdAt: -1 });
+// Note: slug index is automatically created by 'unique: true'
+productSchema.index({ name: 'text', description: 'text', tags: 'text' }); // Text search
+productSchema.index({ category: 1 }); // Filter by category
+productSchema.index({ price: 1 }); // Sort by price
+productSchema.index({ inStock: 1 }); // Filter by stock availability
+productSchema.index({ createdAt: -1 }); // Sort by newest
 
 export const ProductModel: Model<ProductDocument> = mongoose.model<ProductDocument>(
   'Product',

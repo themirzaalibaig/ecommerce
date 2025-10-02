@@ -48,9 +48,7 @@ categorySchema.pre('save', function (next) {
   next();
 });
 
-// Indexes
-categorySchema.index({ slug: 1 });
-categorySchema.index({ name: 1 });
+// Note: Indexes for name and slug are automatically created by 'unique: true'
 
 export const CategoryModel: Model<CategoryDocument> = mongoose.model<CategoryDocument>(
   'Category',
