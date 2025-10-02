@@ -1,4 +1,4 @@
-export { UserModel, IUser } from './user.model';
-export { CategoryModel, ICategory } from './category.model';
-export { ProductModel, IProduct } from './product.model';
+export { UserModel, UserDocument } from './user.model';
+export { CategoryModel, CategoryDocument } from './category.model';
+export { ProductModel, ProductDocument } from './product.model';
 
