@@ -3,6 +3,13 @@ import { CategoryModel } from '../models/category.model';
 import { Request, Response } from 'express';
 import { createValidationError, ResponseUtil } from '../utils/response';
 
+const generateSlug = (name: string): string => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, description, price, tags, thumbnail, images, stock, category: categoryId, size } = req.body;
@@ -27,6 +34,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 
     const product = await ProductModel.create({
       name,
+      slug: generateSlug(name),
       description,
       price,
       tags: tags || [],
@@ -42,7 +50,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 
     ResponseUtil.success(res, { product }, 'Product created successfully');
   } catch (error) {
-    ResponseUtil.internalError(res, 'Internal server error');
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
 };
 
@@ -51,7 +59,7 @@ export const getProducts = async (_: Request, res: Response): Promise<void> => {
     const products = await ProductModel.find({}).populate('category').sort({ createdAt: -1 });
     ResponseUtil.success(res, { products }, 'Products fetched successfully');
   } catch (error) {
-    ResponseUtil.internalError(res, 'Internal server error');
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
 };
 
@@ -67,7 +75,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     }
     ResponseUtil.success(res, { product }, 'Product fetched successfully');
   } catch (error) {
-    ResponseUtil.internalError(res, 'Internal server error');
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
 };
 
@@ -108,6 +116,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
 
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
+    if (name !== undefined) updateData.slug = generateSlug(name);
     if (description !== undefined) updateData.description = description;
     if (price !== undefined) updateData.price = price;
     if (tags !== undefined) updateData.tags = tags;
@@ -125,7 +134,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
 
     ResponseUtil.success(res, { product: updatedProduct }, 'Product updated successfully');
   } catch (error) {
-    ResponseUtil.internalError(res, 'Internal server error');
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
 };
 
@@ -141,6 +150,6 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
     }
     ResponseUtil.success(res, {}, 'Product deleted successfully');
   } catch (error) {
-    ResponseUtil.internalError(res, 'Internal server error');
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
 };
