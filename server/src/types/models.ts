@@ -16,6 +16,11 @@ export enum Size {
   XL = 'xl',
 }
 
+export interface Image {
+  url: string;
+  public_id: string;
+}
+
 export interface User extends BaseModel {
   username: string;
   email: string;
@@ -23,14 +28,14 @@ export interface User extends BaseModel {
   password: string;
   role: Role;
   isActive: boolean;
-  image: string;
+  image: Image;
 }
 
 export interface Category extends BaseModel {
   name: string;
   slug: string;
   description: string;
-  image: string;
+  image: Image;
 }
 
 
@@ -40,8 +45,8 @@ export interface Product extends BaseModel {
   description: string;
   price: number;
   tags: string[];
-  thumbnail: string;
-  images: string[];
+  thumbnail: Image;
+  images: Image[];
   stock: number;
   category: Category;
   size: Size[];

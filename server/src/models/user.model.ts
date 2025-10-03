@@ -47,8 +47,11 @@ const userSchema = new Schema<UserDocument>(
       default: true,
     },
     image: {
-      type: String,
-      default: '',
+      type: Object,
+      default: {
+        url: '',
+        public_id: '',
+      },
     },
   },
   {

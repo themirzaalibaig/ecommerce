@@ -1,7 +1,9 @@
 import mongoose, { Schema, Model } from 'mongoose';
-import { Product, Size } from '../types/models';
+import { Image, Product, Size } from '../types/models';
 
-export interface ProductDocument extends Omit<Product, 'category'>, mongoose.Document {
+export interface ProductDocument
+  extends Omit<Product, 'category'>,
+    mongoose.Document {
   _id: mongoose.Types.ObjectId;
   category: mongoose.Types.ObjectId;
 }
@@ -37,18 +39,28 @@ const productSchema = new Schema<ProductDocument>(
       default: [],
     },
     thumbnail: {
-      type: String,
+      type: Object,
+      default: {
+        url: '',
+        public_id: '',
+      },
       required: [true, 'Product thumbnail is required'],
     },
     images: {
-      type: [String],
+      type: [
+        {
+          url: { type: String },
+          public_id: { type: String },
+        },
+      ],
       default: [],
       validate: {
-        validator: function (images: string[]) {
-          return images.length <= 10;
+        validator: function (images: Image[]) {
+          return Array.isArray(images) && images.length <= 10;
         },
         message: 'Cannot upload more than 10 images',
       },
+      required: [true, 'Product images are required'],
     },
     stock: {
       type: Number,
@@ -116,8 +128,5 @@ productSchema.index({ price: 1 }); // Sort by price
 productSchema.index({ inStock: 1 }); // Filter by stock availability
 productSchema.index({ createdAt: -1 }); // Sort by newest
 
-export const ProductModel: Model<ProductDocument> = mongoose.model<ProductDocument>(
-  'Product',
-  productSchema
-);
-
+export const ProductModel: Model<ProductDocument> =
+  mongoose.model<ProductDocument>('Product', productSchema);

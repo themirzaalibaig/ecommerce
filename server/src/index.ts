@@ -9,6 +9,7 @@ import { logger } from './utils/logger';
 import { rateLimitConfig } from './middleware';
 import { connectDB } from './config/database';
 import { authRoutes } from './routes';
+import { imageRoutes } from './routes/image.routes';
 
 
 const app: Application = express();
@@ -28,6 +29,7 @@ app.use(rateLimitConfig.general);
 
 // Routes
 app.use(API_PREFIX, authRoutes);
+app.use(`${API_PREFIX}/image`, imageRoutes);
 
 
 

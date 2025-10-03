@@ -15,7 +15,10 @@ export const signupSchema = z.object({
           'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
       }
     ),
-    image: z.string().optional(),
+    image: z.object({
+      url: z.string(),
+      public_id: z.string(),
+    }).optional(),
   }),
 });
 
