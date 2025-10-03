@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronRight, Store } from 'lucide-react';
+import { Store } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -10,21 +10,15 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarHeader,
-  SidebarFooter,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { ADMIN_SIDEBAR_NAV } from '@/constants/sidebar';
-import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui';
 
 export const AdminSidebar = () => {
   const location = useLocation();
   const { state } = useSidebar();
 
   const isActive = (href: string) => {
-    if (href === '/admin') {
-      return location.pathname === '/admin';
-    }
     return location.pathname.startsWith(href);
   };
 
@@ -75,23 +69,6 @@ export const AdminSidebar = () => {
           </SidebarGroup>
         ))}
       </SidebarContent>
-
-      <SidebarFooter className="border-t">
-        <div className="p-4">
-          {state === 'expanded' ? (
-            <div className="rounded-lg bg-muted p-3">
-              <p className="text-xs font-medium">Need Help?</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Check our documentation or contact support
-              </p>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">?</span>
-            </div>
-          )}
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 };

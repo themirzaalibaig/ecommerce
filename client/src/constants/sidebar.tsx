@@ -1,13 +1,4 @@
-import {
-  LayoutDashboard,
-  ShoppingBag,
-  FolderTree,
-  Users,
-  ShoppingCart,
-  Settings,
-  BarChart3,
-  Package,
-} from 'lucide-react';
+import { ShoppingBag, FolderTree } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface SidebarNavItem {
@@ -25,25 +16,10 @@ export interface SidebarNavGroup {
 
 export const ADMIN_SIDEBAR_NAV: SidebarNavGroup[] = [
   {
-    title: 'Main',
+    title: 'Manage',
     items: [
       {
-        title: 'Dashboard',
-        href: '/admin',
-        icon: LayoutDashboard,
-      },
-      {
-        title: 'Analytics',
-        href: '/admin/analytics',
-        icon: BarChart3,
-      },
-    ],
-  },
-  {
-    title: 'Products',
-    items: [
-      {
-        title: 'All Products',
+        title: 'Products',
         href: '/admin/products',
         icon: ShoppingBag,
       },
@@ -51,36 +27,6 @@ export const ADMIN_SIDEBAR_NAV: SidebarNavGroup[] = [
         title: 'Categories',
         href: '/admin/categories',
         icon: FolderTree,
-      },
-      {
-        title: 'Inventory',
-        href: '/admin/inventory',
-        icon: Package,
-      },
-    ],
-  },
-  {
-    title: 'Sales',
-    items: [
-      {
-        title: 'Orders',
-        href: '/admin/orders',
-        icon: ShoppingCart,
-      },
-      {
-        title: 'Customers',
-        href: '/admin/customers',
-        icon: Users,
-      },
-    ],
-  },
-  {
-    title: 'Settings',
-    items: [
-      {
-        title: 'Settings',
-        href: '/admin/settings',
-        icon: Settings,
       },
     ],
   },
