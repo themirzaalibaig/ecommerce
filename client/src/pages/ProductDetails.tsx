@@ -71,7 +71,7 @@ export const ProductDetails = () => {
     <div className="min-h-screen flex flex-col">
       <ShopHeader onMenuToggle={() => {}} />
 
-      <div className="container py-8">
+      <div className="container mx-auto py-8">
         <Button variant="ghost" className="mb-6" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back

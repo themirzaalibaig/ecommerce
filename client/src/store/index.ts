@@ -16,9 +16,12 @@ import authReducer from './slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 
+import cartReducer from './slices/cartSlice';
+
 const rootReducer = combineReducers({
   ui: uiReducer,
   auth: authReducer,
+  cart: cartReducer,
 });
 
 // Define RootState type from rootReducer
@@ -27,7 +30,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['ui', 'auth'],
+  whitelist: ['ui', 'auth', 'cart'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

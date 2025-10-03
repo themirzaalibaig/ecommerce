@@ -54,9 +54,38 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-export const getProducts = async (_: Request, res: Response): Promise<void> => {
+export const getProducts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const products = await ProductModel.find({}).populate('category').sort({ createdAt: -1 });
+    const { categories, minPrice, maxPrice, sizes, inStock } = req.query;
+
+    // Build filter object
+    const filter: any = {};
+
+    // Category filter
+    if (categories) {
+      const categoryIds = typeof categories === 'string' ? categories.split(',') : categories;
+      filter.category = { $in: categoryIds };
+    }
+
+    // Price range filter
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.price = {};
+      if (minPrice !== undefined) filter.price.$gte = Number(minPrice);
+      if (maxPrice !== undefined) filter.price.$lte = Number(maxPrice);
+    }
+
+    // Size filter
+    if (sizes) {
+      const sizeArray = typeof sizes === 'string' ? sizes.split(',') : sizes;
+      filter.size = { $in: sizeArray };
+    }
+
+    // In stock filter
+    if (inStock === 'true') {
+      filter.inStock = true;
+    }
+
+    const products = await ProductModel.find(filter).populate('category').sort({ createdAt: -1 });
     ResponseUtil.success(res, { products }, 'Products fetched successfully');
   } catch (error) {
     ResponseUtil.internalError(res, 'Internal server error', error as Error);

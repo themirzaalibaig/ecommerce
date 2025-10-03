@@ -8,12 +8,18 @@ import { Home } from '@/pages/Home';
 import { Login } from '@/pages/Login';
 import { NotFound } from '@/pages/NotFound';
 import { Unauthorized } from '@/pages/Unauthorized';
+import { ProductDetails } from '@/pages/ProductDetails';
+import { Cart } from '@/pages/Cart';
 import { Route, Routes } from 'react-router-dom';
 
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Home />} />
+      <Route path="/products/:slug" element={<ProductDetails />} />
+      <Route path="/cart" element={<Cart />} />
+
       <Route
         path="/login"
         element={
@@ -36,8 +42,9 @@ export const AppRoutes = () => {
         <Route path="categories" element={<Categories />} />
         <Route path="products" element={<Products />} />
       </Route>
+
+      {/* Error Pages */}
       <Route path="/unauthorized" element={<Unauthorized />} />
-      {/* 404 Page */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
