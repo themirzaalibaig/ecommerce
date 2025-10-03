@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, LogOut, User } from 'lucide-react';
+import { ShoppingCart, Menu, LogOut, User, Settings } from 'lucide-react';
 import {
   Button,
   Badge,
@@ -103,6 +103,12 @@ export const ShopHeader = ({ onMenuToggle }: ShopHeaderProps) => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {user.role === 'admin' && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')} className="text-primary">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleLogout} className="text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   Log out

@@ -219,7 +219,7 @@ export const Checkout = () => {
               </CardHeader>
               <CardContent>
                 <Elements stripe={stripePromise}>
-                  <StripePaymentForm amount={total} customerInfo={formData} />
+                  <StripePaymentForm amount={total} />
                 </Elements>
               </CardContent>
             </Card>

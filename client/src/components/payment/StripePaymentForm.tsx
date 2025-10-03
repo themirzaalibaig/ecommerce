@@ -6,19 +6,9 @@ import { Shield } from 'lucide-react';
 
 interface StripePaymentFormProps {
   amount: number;
-  customerInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
 }
 
-export const StripePaymentForm = ({ amount, customerInfo }: StripePaymentFormProps) => {
+export const StripePaymentForm = ({ amount }: StripePaymentFormProps) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
