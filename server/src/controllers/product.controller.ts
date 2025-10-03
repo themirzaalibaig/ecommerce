@@ -12,7 +12,7 @@ const generateSlug = (name: string): string => {
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, description, price, tags, thumbnail, images, stock, category: categoryId, size } = req.body;
+    const { name, description, price, tags, color, thumbnail, images, stock, category: categoryId, size } = req.body;
 
     // Check if category exists
     const category = await CategoryModel.findById(categoryId);
@@ -38,6 +38,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       description,
       price,
       tags: tags || [],
+      color: color || [],
       thumbnail,
       images,
       stock,
@@ -92,6 +93,22 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+export const getProductBySlug = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { slug } = req.params;
+    const product = await ProductModel.findOne({ slug }).populate('category');
+    if (!product) {
+      ResponseUtil.badRequest(res, 'Product not found', [
+        createValidationError('slug', 'Product not found'),
+      ]);
+      return;
+    }
+    ResponseUtil.success(res, { product }, 'Product fetched successfully');
+  } catch (error) {
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
+  }
+};
+
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
@@ -111,7 +128,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, description, price, tags, thumbnail, images, stock, category: categoryId, size } = req.body;
+    const { name, description, price, tags, color, thumbnail, images, stock, category: categoryId, size } = req.body;
 
     const product = await ProductModel.findById(id);
     if (!product) {
@@ -149,6 +166,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
     if (description !== undefined) updateData.description = description;
     if (price !== undefined) updateData.price = price;
     if (tags !== undefined) updateData.tags = tags;
+    if (color !== undefined) updateData.color = color;
     if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
     if (images !== undefined) updateData.images = images;
     if (stock !== undefined) updateData.stock = stock;

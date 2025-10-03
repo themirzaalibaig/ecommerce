@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Button, Badge, Card, CardContent } from '@/components/ui';
 import type { Product } from '@/types/models';
 import { useAppDispatch } from '@/store';
@@ -15,10 +15,17 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
+
+    // Select first size and color if available
+    const selectedSize = product.size.length > 0 ? product.size[0] : undefined;
+    const selectedColor = product.color.length > 0 ? product.color[0] : undefined;
+
     dispatch(
       addToCart({
         product,
         quantity: 1,
+        selectedSize,
+        selectedColor,
       })
     );
     dispatch(openCart());
@@ -41,7 +48,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           )}
           {product.totalSold > 100 && <Badge className="absolute top-2 right-2">Popular</Badge>}
           <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="flex h-full items-center justify-center gap-2">
+            <div className="flex h-full items-center justify-center">
               <Button
                 size="icon"
                 variant="secondary"
@@ -50,9 +57,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 disabled={!product.inStock}
               >
                 <ShoppingCart className="h-4 w-4" />
-              </Button>
-              <Button size="icon" variant="secondary" className="rounded-full">
-                <Heart className="h-4 w-4" />
               </Button>
             </div>
           </div>

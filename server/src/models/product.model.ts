@@ -38,6 +38,10 @@ const productSchema = new Schema<ProductDocument>(
       type: [String],
       default: [],
     },
+    color: {
+      type: [String],
+      default: [],
+    },
     thumbnail: {
       type: Object,
       default: {

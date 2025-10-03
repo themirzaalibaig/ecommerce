@@ -6,8 +6,9 @@ import { AlertTriangle, ArrowLeft } from 'lucide-react';
 export const Unauthorized: React.FC = () => {
   const navigate = useNavigate();
 
+  // Instead of navigate(-1), go to home page for reliability
   const handleGoBack = () => {
-    navigate(-1);
+    navigate('/', { replace: true });
   };
 
   return (

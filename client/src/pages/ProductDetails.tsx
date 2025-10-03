@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Heart, ArrowLeft, Check, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Check, Minus, Plus } from 'lucide-react';
 import {
   Button,
   Badge,
@@ -9,26 +9,84 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Skeleton,
 } from '@/components/ui';
 import { ShopHeader } from '@/components/shop/ShopHeader';
 import { CartSheet } from '@/components/shop/CartSheet';
-import { dummyProducts, availableColors } from '@/data/products';
 import { useAppDispatch } from '@/store';
 import { addToCart, openCart } from '@/store/slices/cartSlice';
 import { toast } from 'react-toastify';
-import type { Size } from '@/types/models';
+import type { Size, Product } from '@/types/models';
+import { useApi } from '@/hooks/useApi';
+import { ENDPOINT_URLS } from '@/constants/endpoints';
+
+const AVAILABLE_COLORS = [
+  { name: 'Black', value: 'black', hex: '#000000' },
+  { name: 'White', value: 'white', hex: '#FFFFFF' },
+  { name: 'Gray', value: 'gray', hex: '#6B7280' },
+  { name: 'Red', value: 'red', hex: '#EF4444' },
+  { name: 'Blue', value: 'blue', hex: '#3B82F6' },
+  { name: 'Green', value: 'green', hex: '#10B981' },
+  { name: 'Yellow', value: 'yellow', hex: '#F59E0B' },
+  { name: 'Purple', value: 'purple', hex: '#8B5CF6' },
+  { name: 'Pink', value: 'pink', hex: '#EC4899' },
+  { name: 'Orange', value: 'orange', hex: '#F97316' },
+];
 
 export const ProductDetails = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const product = dummyProducts.find((p) => p.slug === slug);
+  const { data, isLoading } = useApi<{ product: Product }>(
+    slug ? ENDPOINT_URLS.PRODUCTS.BY_SLUG(slug) : '',
+    { immediate: !!slug }
+  );
+
+  const product = data?.product;
 
   const [selectedSize, setSelectedSize] = useState<Size | undefined>(undefined);
   const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
   const [currentImage, setCurrentImage] = useState(0);
+
+  // Set first size and color as default when product loads
+  useEffect(() => {
+    if (product) {
+      if (product.size.length > 0 && !selectedSize) {
+        setSelectedSize(product.size[0]);
+      }
+      if (product.color && product.color.length > 0 && !selectedColor) {
+        setSelectedColor(product.color[0]);
+      }
+    }
+  }, [product, selectedSize, selectedColor]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <ShopHeader onMenuToggle={() => {}} />
+        <div className="container mx-auto py-8">
+          <Skeleton className="h-10 w-32 mb-6" />
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="space-y-4">
+              <Skeleton className="aspect-square rounded-lg" />
+              <div className="grid grid-cols-4 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="aspect-square rounded-lg" />
+                ))}
+              </div>
+            </div>
+            <div className="space-y-6">
+              <Skeleton className="h-8 w-3/4" />
+              <Skeleton className="h-6 w-1/2" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -44,7 +102,8 @@ export const ProductDetails = () => {
     );
   }
 
-  const images = product.images.length > 0 ? product.images : [product.thumbnail];
+  // Always show thumbnail first, then other images
+  const images = [product.thumbnail, ...product.images];
 
   const handleAddToCart = () => {
     if (product.size.length > 0 && !selectedSize) {
@@ -111,7 +170,9 @@ export const ProductDetails = () => {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <Badge className="mb-2">{product.category.name}</Badge>
+              <Badge className="mb-2">
+                {typeof product.category === 'string' ? product.category : product.category.name}
+              </Badge>
               <h1 className="text-3xl font-bold">{product.name}</h1>
               <p className="text-2xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
             </div>
@@ -143,27 +204,32 @@ export const ProductDetails = () => {
             )}
 
             {/* Color Selection */}
-            <div>
-              <label className="text-sm font-medium mb-3 block">
-                Select Color (Optional){' '}
-                {selectedColor && <Check className="inline h-4 w-4 text-green-500" />}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {availableColors.slice(0, 4).map((color) => (
-                  <button
-                    key={color.value}
-                    className={`h-8 w-8 rounded-full border-2 transition-all ${
-                      selectedColor === color.value
-                        ? 'ring-2 ring-primary ring-offset-2'
-                        : 'border-muted-foreground/20'
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                    onClick={() => setSelectedColor(color.value)}
-                    title={color.name}
-                  />
-                ))}
+            {product.color && product.color.length > 0 && (
+              <div>
+                <label className="text-sm font-medium mb-3 block">
+                  Select Color (Optional){' '}
+                  {selectedColor && <Check className="inline h-4 w-4 text-green-500" />}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {product.color.map((colorValue: string) => {
+                    const colorData = AVAILABLE_COLORS.find((c) => c.value === colorValue);
+                    return (
+                      <button
+                        key={colorValue}
+                        className={`h-8 w-8 rounded-full border-2 transition-all ${
+                          selectedColor === colorValue
+                            ? 'ring-2 ring-primary ring-offset-2'
+                            : 'border-muted-foreground/20'
+                        }`}
+                        style={{ backgroundColor: colorData?.hex || '#000000' }}
+                        onClick={() => setSelectedColor(colorValue)}
+                        title={colorData?.name || colorValue}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity */}
             <div>
@@ -180,15 +246,10 @@ export const ProductDetails = () => {
             </div>
 
             {/* Add to Cart */}
-            <div className="flex gap-3">
-              <Button className="flex-1" size="lg" onClick={handleAddToCart}>
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Add to Cart
-              </Button>
-              <Button variant="outline" size="lg">
-                <Heart className="h-5 w-5" />
-              </Button>
-            </div>
+            <Button className="w-full" size="lg" onClick={handleAddToCart}>
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              Add to Cart
+            </Button>
 
             {/* Stock Status */}
             <div className="flex items-center gap-2">
@@ -226,12 +287,24 @@ export const ProductDetails = () => {
                 <dl className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Category</dt>
-                    <dd className="font-medium">{product.category.name}</dd>
+                    <dd className="font-medium">
+                      {typeof product.category === 'string'
+                        ? product.category
+                        : product.category.name}
+                    </dd>
                   </div>
-                  <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Tags</dt>
-                    <dd className="font-medium">{product.tags.join(', ')}</dd>
-                  </div>
+                  {product.tags && product.tags.length > 0 && (
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Tags</dt>
+                      <dd className="font-medium">{product.tags.join(', ')}</dd>
+                    </div>
+                  )}
+                  {product.color && product.color.length > 0 && (
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Colors</dt>
+                      <dd className="font-medium capitalize">{product.color.join(', ')}</dd>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Total Sold</dt>
                     <dd className="font-medium">{product.totalSold}</dd>

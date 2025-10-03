@@ -2,6 +2,7 @@ import {
   createProduct,
   getProducts,
   getProductById,
+  getProductBySlug,
   updateProduct,
   deleteProduct,
 } from '../controllers/product.controller';
@@ -16,6 +17,7 @@ const router: Router = Router();
 
 router.post('/', validate(createProductSchema), createProduct);
 router.get('/', getProducts);
+router.get('/slug/:slug', getProductBySlug);
 router.get('/:id', getProductById);
 router.put('/:id', validate(updateProductSchema), updateProduct);
 router.delete('/:id', deleteProduct);

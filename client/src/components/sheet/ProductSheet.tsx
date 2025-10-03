@@ -46,10 +46,24 @@ interface ProductSheetProps {
 
 const SIZES: Size[] = ['xs', 's', 'm', 'l', 'xl'];
 
+const AVAILABLE_COLORS = [
+  { name: 'Black', value: 'black', hex: '#000000' },
+  { name: 'White', value: 'white', hex: '#FFFFFF' },
+  { name: 'Gray', value: 'gray', hex: '#6B7280' },
+  { name: 'Red', value: 'red', hex: '#EF4444' },
+  { name: 'Blue', value: 'blue', hex: '#3B82F6' },
+  { name: 'Green', value: 'green', hex: '#10B981' },
+  { name: 'Yellow', value: 'yellow', hex: '#F59E0B' },
+  { name: 'Purple', value: 'purple', hex: '#8B5CF6' },
+  { name: 'Pink', value: 'pink', hex: '#EC4899' },
+  { name: 'Orange', value: 'orange', hex: '#F97316' },
+];
+
 export function ProductSheet({ id, children }: ProductSheetProps) {
   const [open, setOpen] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const imagesInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,6 +88,7 @@ export function ProductSheet({ id, children }: ProductSheetProps) {
       description: '',
       price: 0,
       tags: [],
+      color: [],
       thumbnail: { url: '', public_id: '' },
       images: [],
       stock: 0,
@@ -93,6 +108,7 @@ export function ProductSheet({ id, children }: ProductSheetProps) {
           description: data.product.description,
           price: data.product.price,
           tags: data.product.tags || [],
+          color: data.product.color || [],
           thumbnail: data.product.thumbnail,
           images: data.product.images || [],
           stock: data.product.stock,
@@ -117,6 +133,8 @@ export function ProductSheet({ id, children }: ProductSheetProps) {
   const watchedThumbnail = form.watch('thumbnail');
   const watchedImages = form.watch('images');
   const watchedSize = form.watch('size');
+  const watchedTags = form.watch('tags');
+  const watchedColors = form.watch('color');
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -242,6 +260,33 @@ export function ProductSheet({ id, children }: ProductSheetProps) {
       ? currentSizes.filter((s) => s !== size)
       : [...currentSizes, size];
     form.setValue('size', newSizes, { shouldValidate: true });
+  };
+
+  const handleColorToggle = (color: string) => {
+    const currentColors = watchedColors || [];
+    const newColors = currentColors.includes(color)
+      ? currentColors.filter((c) => c !== color)
+      : [...currentColors, color];
+    form.setValue('color', newColors, { shouldValidate: true });
+  };
+
+  const handleAddTag = () => {
+    if (tagInput.trim()) {
+      const currentTags = watchedTags || [];
+      if (!currentTags.includes(tagInput.trim())) {
+        form.setValue('tags', [...currentTags, tagInput.trim()], { shouldValidate: true });
+      }
+      setTagInput('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = watchedTags || [];
+    form.setValue(
+      'tags',
+      currentTags.filter((tag) => tag !== tagToRemove),
+      { shouldValidate: true }
+    );
   };
 
   return (
@@ -390,6 +435,82 @@ export function ProductSheet({ id, children }: ProductSheetProps) {
                   ))}
                 </div>
                 <FormDescription>Select available sizes for this product</FormDescription>
+              </div>
+
+              <Separator />
+
+              {/* Colors */}
+              <div className="space-y-3">
+                <FormLabel>Available Colors</FormLabel>
+                <div className="flex flex-wrap gap-2">
+                  {AVAILABLE_COLORS.map((color) => (
+                    <button
+                      key={color.value}
+                      type="button"
+                      className={`h-10 w-10 rounded-full border-2 transition-all ${
+                        watchedColors?.includes(color.value)
+                          ? 'ring-2 ring-primary ring-offset-2 border-primary'
+                          : 'border-muted-foreground/20'
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      onClick={() => handleColorToggle(color.value)}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+                <FormDescription>Select available colors for this product</FormDescription>
+                {watchedColors && watchedColors.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {watchedColors.map((color) => {
+                      const colorData = AVAILABLE_COLORS.find((c) => c.value === color);
+                      return (
+                        <Badge key={color} variant="secondary" className="text-xs">
+                          {colorData?.name || color}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Tags */}
+              <div className="space-y-3">
+                <FormLabel>Tags</FormLabel>
+                <div className="flex gap-2">
+                  <Input
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    placeholder="Add a tag..."
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                  />
+                  <Button type="button" onClick={handleAddTag} variant="secondary">
+                    Add
+                  </Button>
+                </div>
+                {watchedTags && watchedTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {watchedTags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTag(tag)}
+                          className="ml-1 hover:text-destructive"
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                <FormDescription>Add tags to help customers find this product</FormDescription>
               </div>
 
               <Separator />

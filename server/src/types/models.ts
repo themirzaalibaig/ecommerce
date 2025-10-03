@@ -44,6 +44,7 @@ export interface Product extends BaseModel {
   description: string;
   price: number;
   tags: string[];
+  color: string[];
   thumbnail: Image;
   images: Image[];
   stock: number;

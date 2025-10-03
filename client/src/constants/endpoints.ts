@@ -15,6 +15,7 @@ export const ENDPOINT_URLS = {
   PRODUCTS: {
     LIST: `${API_PREFIX}/products`,
     DETAIL: (id: string) => `${API_PREFIX}/products/${id}`,
+    BY_SLUG: (slug: string) => `${API_PREFIX}/products/slug/${slug}`,
     CREATE: `${API_PREFIX}/products`,
     UPDATE: (id: string) => `${API_PREFIX}/products/${id}`,
     DELETE: (id: string) => `${API_PREFIX}/products/${id}`,

@@ -18,6 +18,7 @@ export const createProductSchema = z.object({
       .max(2000, 'Description cannot exceed 2000 characters'),
     price: z.number().min(0, 'Price cannot be negative'),
     tags: z.array(z.string()).optional(),
+    color: z.array(z.string()).optional(),
     thumbnail: imageSchema.required(),
     images: z
       .array(imageSchema)
@@ -44,6 +45,7 @@ export const updateProductSchema = z.object({
         .optional(),
       price: z.number().min(0, 'Price cannot be negative').optional(),
       tags: z.array(z.string()).optional(),
+      color: z.array(z.string()).optional(),
       thumbnail: imageSchema.optional(),
       images: z
         .array(imageSchema)
