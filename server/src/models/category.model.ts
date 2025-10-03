@@ -28,8 +28,11 @@ const categorySchema = new Schema<CategoryDocument>(
       default: '',
     },
     image: {
-      type: String,
-      default: '',
+      type: Object,
+      default: {
+        url: '',
+        public_id: '',
+      },
     },
   },
   {
@@ -42,7 +45,7 @@ categorySchema.pre('save', function (next) {
   if (this.isModified('name') && !this.slug) {
     this.slug = (this.name as string)
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/[^a-z0-9]+/g, '-')  
       .replace(/(^-|-$)/g, '');
   }
   next();

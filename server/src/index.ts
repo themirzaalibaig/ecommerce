@@ -8,8 +8,7 @@ dotenv.config();
 import { logger } from './utils/logger';
 import { rateLimitConfig } from './middleware';
 import { connectDB } from './config/database';
-import { authRoutes } from './routes';
-import { imageRoutes } from './routes/';
+import { authRoutes, categoryRoutes, imageRoutes } from './routes';
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
@@ -29,7 +28,7 @@ app.use(rateLimitConfig.general);
 // Routes
 app.use(API_PREFIX, authRoutes);
 app.use(`${API_PREFIX}/image`, imageRoutes);
-
+app.use(`${API_PREFIX}/category`, categoryRoutes);
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
