@@ -217,29 +217,31 @@ export function DataTable<T extends Record<string, any>>({
 
   // Apply custom filters
   useEffect(() => {
-    table.setColumnFilters((prev) => {
-      // Remove existing custom filters
-      const filterIds = [...filters.map((f) => f.id), dateFilterColumn];
-      const newFilters = prev.filter((f) => !filterIds.includes(f.id));
+    if (filters.length > 0) {
+      table.setColumnFilters((prev) => {
+        // Remove existing custom filters
+        const filterIds = [...filters.map((f) => f.id), dateFilterColumn];
+        const newFilters = prev.filter((f) => !filterIds.includes(f.id));
 
-      // Add dynamic filters
-      filters.forEach((filter) => {
-        const value = filterValues[filter.id];
-        if (value) {
-          newFilters.push({ id: filter.id, value });
-        }
-      });
-
-      // Add date range filter if enabled
-      if (enableDateFilter && (dateRange.from || dateRange.to)) {
-        newFilters.push({
-          id: dateFilterColumn,
-          value: dateRange,
+        // Add dynamic filters
+        filters.forEach((filter) => {
+          const value = filterValues[filter.id];
+          if (value) {
+            newFilters.push({ id: filter.id, value });
+          }
         });
-      }
 
-      return newFilters;
-    });
+        // Add date range filter if enabled
+        if (enableDateFilter && (dateRange.from || dateRange.to)) {
+          newFilters.push({
+            id: dateFilterColumn,
+            value: dateRange,
+          });
+        }
+
+        return newFilters;
+      });
+    }
   }, [filterValues, dateRange, filters, dateFilterColumn, enableDateFilter, table]);
 
   // Handle row selection callback - only trigger when rowSelection changes
