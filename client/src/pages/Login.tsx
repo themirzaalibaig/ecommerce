@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { Camera, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
-import { toast } from 'react-toastify';
 
 import {
   Card,
@@ -82,7 +81,6 @@ export const Login = () => {
       } else {
         navigate('/');
       }
-      toast.success('Login successful!');
     } catch (error) {
       handleApiError(error, loginForm.setError);
     }

@@ -1,29 +1,19 @@
 import { useAppSelector } from '@/store';
-import React, { useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 
 interface PublicRouteProps {
   children: React.ReactNode;
-  redirect?: string;
 }
 
-export const PublicRoute = ({ children, redirect }: PublicRouteProps) => {
+export const PublicRoute = ({ children }: PublicRouteProps) => {
   const isAuthenticated = useAppSelector((state) => state.auth.token);
-  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    if (isAuthenticated && !redirect) {
-      // If redirect is empty, go back
-      navigate(-1);
-    }
-  }, [isAuthenticated, redirect, navigate]);
-
-  if (isAuthenticated) {
-    if (!redirect) {
-      // Prevent rendering anything while navigating back
-      return null;
-    }
-    return <Navigate to={redirect} replace />;
+  // If user is authenticated, redirect to appropriate page
+  if (isAuthenticated && user) {
+    const redirectPath = user.role === 'admin' ? '/admin' : '/';
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <>{children}</>;
