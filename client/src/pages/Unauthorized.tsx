@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buttonVariants } from '@/components/ui';
-import { AlertTriangle, ArrowLeft, Home } from 'lucide-react';
+import { AlertTriangle, ArrowLeft } from 'lucide-react';
 
 export const Unauthorized: React.FC = () => {
   const navigate = useNavigate();
@@ -10,9 +10,6 @@ export const Unauthorized: React.FC = () => {
     navigate(-1);
   };
 
-  const handleGoHome = () => {
-    navigate('/dashboard');
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted">
@@ -31,18 +28,6 @@ export const Unauthorized: React.FC = () => {
               believe this is an error.
             </p>
             <div className="pt-4 space-y-3">
-              <button
-                onClick={handleGoHome}
-                className={buttonVariants({
-                  variant: 'default',
-                  size: 'lg',
-                  className:
-                    'w-full px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300',
-                })}
-              >
-                <Home className="w-5 h-5 mr-2" />
-                Go to Dashboard
-              </button>
               <button
                 onClick={handleGoBack}
                 className={buttonVariants({
