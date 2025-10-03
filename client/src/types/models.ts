@@ -31,7 +31,6 @@ export interface Category extends BaseModel {
   image: Image;
 }
 
-
 export interface Product extends BaseModel {
   name: string;
   slug: string;
@@ -47,4 +46,3 @@ export interface Product extends BaseModel {
   totalStock: number;
   totalSold: number;
 }
-

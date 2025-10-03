@@ -11,7 +11,6 @@ import { connectDB } from './config/database';
 import { authRoutes } from './routes';
 import { imageRoutes } from './routes/';
 
-
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
@@ -31,19 +30,14 @@ app.use(rateLimitConfig.general);
 app.use(API_PREFIX, authRoutes);
 app.use(`${API_PREFIX}/image`, imageRoutes);
 
-
-
-
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
-  res
-    .status(200)
-    .json({
-      success: true,
-      message: `${PROJECT_NAME} is running`,
-      version: API_VERSION,
-      timestamp: new Date().toISOString(),
-    });
+  res.status(200).json({
+    success: true,
+    message: `${PROJECT_NAME} is running`,
+    version: API_VERSION,
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Start server

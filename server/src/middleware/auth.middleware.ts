@@ -3,7 +3,11 @@ import jwt from 'jsonwebtoken';
 import { UserModel, UserDocument } from '../models/user.model';
 import { ResponseUtil } from '../utils/response';
 import { logger } from '../utils/logger';
-import { JWTPayload, verifyToken, generateToken as generateJWT } from '../config/jwt';
+import {
+  JWTPayload,
+  verifyToken,
+  generateToken as generateJWT,
+} from '../config/jwt';
 
 /**
  * Extended Request Interface with User
@@ -31,7 +35,10 @@ export const authenticate = async (
         method: req.method,
         ip: req.ip,
       });
-      ResponseUtil.unauthorized(res, 'Authentication required. Please provide a valid token');
+      ResponseUtil.unauthorized(
+        res,
+        'Authentication required. Please provide a valid token'
+      );
       return;
     }
 
@@ -46,7 +53,6 @@ export const authenticate = async (
       ResponseUtil.unauthorized(res, 'Authentication token is missing');
       return;
     }
-
 
     let decoded: JWTPayload;
     try {
@@ -125,4 +131,3 @@ export const generateToken = (user: UserDocument): string => {
 
   return generateJWT(payload);
 };
-

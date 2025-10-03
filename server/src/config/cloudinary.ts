@@ -50,7 +50,9 @@ export const uploadImageToCloudinary = async (
   }
 };
 
-export const deleteImage = async (public_id: string): Promise<CloudinaryResponse> => {
+export const deleteImage = async (
+  public_id: string
+): Promise<CloudinaryResponse> => {
   try {
     await cloudinary.uploader.destroy(public_id);
     return { success: true };

@@ -98,10 +98,7 @@ export const requireOwnership = (userIdField: string = 'userId') => {
         userIdField,
         path: req.path,
       });
-      ResponseUtil.badRequest(
-        res,
-        'Resource owner identification is missing'
-      );
+      ResponseUtil.badRequest(res, 'Resource owner identification is missing');
       return;
     }
 
@@ -112,10 +109,7 @@ export const requireOwnership = (userIdField: string = 'userId') => {
         resourceOwnerId,
         path: req.path,
       });
-      ResponseUtil.forbidden(
-        res,
-        'You can only access your own resources'
-      );
+      ResponseUtil.forbidden(res, 'You can only access your own resources');
       return;
     }
 
@@ -134,7 +128,11 @@ export const requireOwnership = (userIdField: string = 'userId') => {
  * Similar to ownership but allows for different ID field names
  */
 export const canModify = (getOwnerId: (req: Request) => string | undefined) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const authReq = req as AuthRequest;
 
     if (!authReq.user) {
@@ -181,7 +179,11 @@ export const checkAccess = (
   condition: (req: AuthRequest) => boolean | Promise<boolean>,
   errorMessage: string = 'Access denied'
 ) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const authReq = req as AuthRequest;
 
     if (!authReq.user) {
@@ -213,4 +215,3 @@ export const checkAccess = (
     }
   };
 };
-

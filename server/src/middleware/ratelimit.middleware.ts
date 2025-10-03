@@ -118,7 +118,10 @@ export const rateLimitConfig = {
         path: req.path,
         user: (req as any).user?.id,
       });
-      ResponseUtil.rateLimitExceeded(res, 'Too many requests, please slow down');
+      ResponseUtil.rateLimitExceeded(
+        res,
+        'Too many requests, please slow down'
+      );
     },
   }),
 };
@@ -152,4 +155,3 @@ export const createRateLimiter = (
     },
   });
 };
-

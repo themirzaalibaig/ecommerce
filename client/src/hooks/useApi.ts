@@ -322,17 +322,15 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
   /**
    * Uploads a file with progress tracking
    * @param endpoint - API endpoint path
-   * @param file - File to upload
+   * @param formData - FormData to upload
    * @param onProgress - Callback for upload progress
    * @returns Promise resolving to an object with data and full response
    */
   const uploadFile = (
     endpoint: string,
-    file: File,
+    formData: FormData,
     onProgress?: (percentage: number) => void
   ): Promise<{ data: T; response: ApiResponse<T> }> => {
-    const formData = new FormData();
-    formData.append('file', file);
     return request<T>('post', endpoint, formData, {
       config: {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -340,6 +338,7 @@ export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): Api
           ? (event) => onProgress(Math.round((100 * event.loaded) / event.total!))
           : undefined,
       },
+      silent: true,
     });
   };
 

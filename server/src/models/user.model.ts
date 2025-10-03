@@ -4,7 +4,6 @@ import { User, Role } from '../types/models';
 
 export interface UserDocument extends User, mongoose.Document {
   _id: mongoose.Types.ObjectId;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<UserDocument>(
@@ -70,22 +69,17 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    const saltRounds = 12;
+    this.password = await bcrypt.hash(this.password, saltRounds);
     next();
   } catch (error) {
     next(error as Error);
   }
 });
 
-// Method to compare password
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
-
 // Note: Indexes for email, username, and phone are automatically created by 'unique: true'
 
-export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>('User', userSchema);
-
+export const UserModel: Model<UserDocument> = mongoose.model<UserDocument>(
+  'User',
+  userSchema
+);

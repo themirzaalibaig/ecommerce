@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
+import { Camera, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 import {
@@ -32,13 +32,15 @@ import {
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINT_URLS } from '@/constants/endpoints';
 import { handleApiError } from '@/lib';
-import type { User } from '@/types/models';
+import type { Image, User } from '@/types/models';
 import { setCredentials } from '@/store/slices/authSlice';
 
 export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [signupImage, setSignupImage] = useState<File | null>(null);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
-  const { post, isMutating } = useApi(ENDPOINT_URLS.USERS.LOGIN, {
+  const { post, isMutating, uploadFile } = useApi(ENDPOINT_URLS.USERS.LOGIN, {
     immediate: false,
   });
 
@@ -52,7 +54,6 @@ export const Login = () => {
       email: '',
       password: '',
     },
-    mode: 'onBlur',
   });
 
   // Signup form
@@ -63,9 +64,11 @@ export const Login = () => {
       email: '',
       phone: '',
       password: '',
-      image: '',
+      image: {
+        url: '',
+        public_id: '',
+      },
     },
-    mode: 'onBlur',
   });
 
   const onLoginSubmit = async (data: LoginFormData) => {
@@ -83,15 +86,50 @@ export const Login = () => {
 
   const onSignupSubmit = async (data: SignupFormData) => {
     try {
+      if (signupImage) {
+        const formData = new FormData();
+        formData.append('file', signupImage as File);
+        formData.append('folder', 'users');
+        const { response } = await uploadFile(ENDPOINT_URLS.USERS.IMAGE.UPLOAD, formData);
+        if (response.success) {
+          data.image = {
+            url: (response.data as Image)?.url as string,
+            public_id: (response.data as Image)?.public_id as string,
+          };
+        }
+      }
+
       const {
         data: { user, token },
       } = await post<{ user: User; token: string }>(ENDPOINT_URLS.USERS.SIGNUP, data);
       dispatch(setCredentials({ token, user }));
-      toast.success('Account created successfully!');
-      navigate('/');
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       handleApiError(error, signupForm.setError);
     }
+  };
+
+  const handleSignupImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSignupImage(file);
+    const previewUrl = URL.createObjectURL(file);
+    signupForm.setValue('image', {
+      url: previewUrl,
+      public_id: '',
+    });
+    // const formData = new FormData();
+    // formData.append('file', file);
+    // formData.append('folder', 'users');
+    // const { data } = await uploadFile(ENDPOINT_URLS.USERS.IMAGE.UPLOAD, formData);
+    // setSignupImage({
+    //   url: (data as Image)?.url ?? '',
+    //   public_id: (data as Image)?.public_id ?? '',
+    // });
   };
 
   return (
@@ -180,6 +218,32 @@ export const Login = () => {
                 <TabsContent value="signup">
                   <Form {...signupForm}>
                     <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className="space-y-4">
+                      <div
+                        className="flex items-center justify-center cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <div className="size-20 rounded-full bg-background border flex items-center justify-center overflow-hidden">
+                          {signupForm.watch('image')?.url ? (
+                            <img
+                              src={signupForm.watch('image').url}
+                              alt="Profile"
+                              className="object-cover w-full h-full"
+                            />
+                          ) : (
+                            <span className="text-gray-400 text-2xl flex items-center justify-center">
+                              <Camera className="h-8 w-8" />
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <input
+                        className="hidden"
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleSignupImageChange}
+                      />
+
                       <FormField
                         control={signupForm.control}
                         name="username"

@@ -128,7 +128,7 @@ export interface ApiHookReturn<T>
   /** Upload a file */
   uploadFile: (
     endpoint: string,
-    file: File,
+    formData: FormData,
     onProgress?: (percentage: number) => void
   ) => Promise<{ data: T; response: ApiResponse<T> }>;
   /** Execute multiple requests concurrently */

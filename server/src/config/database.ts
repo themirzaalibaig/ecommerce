@@ -3,14 +3,14 @@ import { logger } from '../utils/logger';
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
+    const mongoURI =
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
 
     await mongoose.connect(mongoURI);
 
-   logger.info('MongoDB connected successfully');
+    logger.info('MongoDB connected successfully');
   } catch (error) {
     logger.error('MongoDB connection error:', error);
     process.exit(1);
   }
 };
-

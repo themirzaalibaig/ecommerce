@@ -205,13 +205,13 @@ export const commonSchemas = {
   pagination: z.object({
     page: z
       .string()
-      .transform(val => parseInt(val, 10))
+      .transform((val) => parseInt(val, 10))
       .pipe(z.number().min(1, 'Page must be at least 1'))
       .optional()
       .default(1),
     limit: z
       .string()
-      .transform(val => parseInt(val, 10))
+      .transform((val) => parseInt(val, 10))
       .pipe(
         z
           .number()
@@ -240,7 +240,7 @@ export const commonSchemas = {
       startDate: z.string().datetime('Invalid start date format'),
       endDate: z.string().datetime('Invalid end date format'),
     })
-    .refine(data => new Date(data.startDate) <= new Date(data.endDate), {
+    .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
       message: 'Start date must be before or equal to end date',
       path: ['dateRange'],
     }),

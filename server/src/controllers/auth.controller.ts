@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { UserModel } from '../models/user.model';
 import { Request, Response } from 'express';
 import { createValidationError, ResponseUtil } from '../utils/response';
@@ -28,7 +29,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       password,
       image,
     });
-    ResponseUtil.success(res, user, 'User created successfully');
+    const token = generateToken({
+      userId: user._id.toString(),
+      role: user.role,
+    });
+    ResponseUtil.success(res, { user, token }, 'User created successfully');
   } catch (error) {
     ResponseUtil.internalError(res, 'Internal server error');
   }
@@ -37,25 +42,34 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const user = await UserModel.findOne({ email });
+    
+    // Must select password explicitly since it has select: false in model
+    const user = await UserModel.findOne({ email }).select('+password');
     if (!user) {
-      ResponseUtil.badRequest(res, 'User not found', [
-        createValidationError('email', 'User not found'),
+      ResponseUtil.badRequest(res, 'Invalid email or password', [
+        createValidationError('email', 'Invalid credentials'),
       ]);
       return;
     }
-    const isPasswordCorrect = await user.comparePassword(password);
+
+    // Use the comparePassword method from the model
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      ResponseUtil.badRequest(res, 'Invalid password', [
-        createValidationError('password', 'Invalid password'),
+      ResponseUtil.badRequest(res, 'Invalid email or password', [
+        createValidationError('password', 'Invalid credentials'),
       ]);
       return;
     }
+
     const token = generateToken({
       userId: user._id.toString(),
       role: user.role,
     });
-    ResponseUtil.success(res, { user, token }, 'Login successful');
+
+    // Remove password from response
+    const userResponse = user.toJSON();
+    
+    ResponseUtil.success(res, { user: userResponse, token }, 'Login successful');
   } catch (error) {
     ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
