@@ -9,7 +9,7 @@ import { logger } from './utils/logger';
 import { rateLimitConfig } from './middleware';
 import { connectDB } from './config/database';
 import { authRoutes } from './routes';
-import { imageRoutes } from './routes/image.routes';
+import { imageRoutes } from './routes/';
 
 
 const app: Application = express();

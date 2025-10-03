@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryResponse } from '../types/cloudinary';
-import { logger } from '@utils/logger';
+import { logger } from '../utils/logger';
 
 if (
   !process.env.CLOUDINARY_CLOUD_NAME ||
