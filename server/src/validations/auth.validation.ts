@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const signupSchema = z.object({
+  body: z.object({
   username: z.string().min(3).max(50),
   email: z.string().email(),
   phone: z.string().min(10).max(15),
@@ -14,10 +15,12 @@ export const signupSchema = z.object({
           'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
       }
     ),
-  image: z.string().optional(),
+    image: z.string().optional(),
+  }),
 });
 
 export const loginSchema = z.object({
+  body: z.object({
   email: z.string().email(),
   password: z
     .string()
@@ -29,4 +32,5 @@ export const loginSchema = z.object({
           'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character',
       }
     ),
+  }),
 });

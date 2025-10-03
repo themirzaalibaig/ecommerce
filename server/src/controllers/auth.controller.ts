@@ -57,6 +57,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
     ResponseUtil.success(res, { user, token }, 'Login successful');
   } catch (error) {
-    ResponseUtil.internalError(res, 'Internal server error');
+    ResponseUtil.internalError(res, 'Internal server error', error as Error);
   }
 };
