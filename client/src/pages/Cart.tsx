@@ -82,7 +82,7 @@ export const Cart = () => {
     <div className="min-h-screen flex flex-col">
       <ShopHeader onMenuToggle={() => {}} />
 
-      <div className="container py-8">
+      <div className="container mx-auto py-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <Button variant="ghost" asChild className="mb-4">

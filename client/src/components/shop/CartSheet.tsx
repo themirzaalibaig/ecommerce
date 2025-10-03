@@ -79,7 +79,7 @@ export const CartSheet = () => {
           </div>
         ) : (
           <>
-            <ScrollArea className="flex-1 -mx-6 px-6">
+            <ScrollArea className="flex-1 -mx-6 px-10">
               <div className="space-y-4 py-4">
                 {cartItems.map((item, index) => (
                   <div key={index} className="flex gap-4">
