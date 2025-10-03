@@ -77,8 +77,12 @@ export const Login = () => {
         data: { user, token },
       } = await post<{ user: User; token: string }>(ENDPOINT_URLS.USERS.LOGIN, data);
       dispatch(setCredentials({ token, user }));
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
       toast.success('Login successful!');
-      navigate('/');
     } catch (error) {
       handleApiError(error, loginForm.setError);
     }
