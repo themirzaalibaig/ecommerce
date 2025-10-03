@@ -6,6 +6,6 @@ const router: Router = Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 router.post('/upload', upload.single('file'), uploadImage);
-router.delete('/delete', deleteImage);
+router.post('/delete', deleteImage);
 
 export { router as imageRoutes };

@@ -10,7 +10,6 @@ export const Unauthorized: React.FC = () => {
     navigate(-1);
   };
 
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted">
       <div className="relative w-full max-w-lg mx-auto px-4 py-8">

@@ -1,6 +1,10 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Category } from '@/types/models';
 import { format } from 'date-fns';
+import { CategorySheet } from '@/components/sheet/CategorySheet';
+import { Button } from '@/components/ui';
+import { Pencil, Trash2 } from 'lucide-react';
+import { ConfirmCategoryDialog } from '@/components/dialog/ConfirmCategoryDialog';
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -43,6 +47,26 @@ export const columns: ColumnDef<Category>[] = [
         );
       }
       return <span>No image</span>;
+    },
+  },
+  {
+    accessorKey: 'actions',
+    header: 'Actions',
+    cell: (info) => {
+      return (
+        <div className="flex gap-2">
+          <CategorySheet id={info.row.original._id}>
+            <Button variant="outline" size="icon" className="text-primary" title="Edit">
+              <Pencil size={18} />
+            </Button>
+          </CategorySheet>
+          <ConfirmCategoryDialog id={info.row.original._id} category={info.row.original}>
+            <Button variant="outline" size="icon" className="text-destructive" title="Delete">
+              <Trash2 size={18} />
+            </Button>
+          </ConfirmCategoryDialog>
+        </div>
+      );
     },
   },
 ];

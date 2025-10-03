@@ -4,8 +4,8 @@ import { Button } from '@/components/ui';
 import { ENDPOINT_URLS } from '@/constants/endpoints';
 import { useApi } from '@/hooks/useApi';
 import type { Category } from '@/types/models';
-import React from 'react';
 import { columns } from './columns';
+import CategorySheet from '@/components/sheet/CategorySheet';
 
 export const Categories = () => {
   const { data, isLoading } = useApi<{ categories: Category[] }>(ENDPOINT_URLS.CATEGORIES.LIST, {
@@ -15,7 +15,9 @@ export const Categories = () => {
   return (
     <div>
       <PageHeader title="Categories" description="Manage your categories">
-        <Button>Add Category</Button>
+        <CategorySheet>
+          <Button>Add Category</Button>
+        </CategorySheet>
       </PageHeader>
       <DataTable
         data={data?.categories || []}
