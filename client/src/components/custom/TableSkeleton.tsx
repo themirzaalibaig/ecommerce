@@ -5,9 +5,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 interface TableSkeletonProps {
   columns?: number;
@@ -29,14 +29,12 @@ export function TableSkeleton({
   className,
 }: TableSkeletonProps) {
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn('space-y-4', className)}>
       {/* Search and Filter Controls Skeleton */}
       {(showSearch || showFilters || showExport) && (
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            {showSearch && (
-              <Skeleton className="h-10 w-[250px]" />
-            )}
+            {showSearch && <Skeleton className="h-10 w-[250px]" />}
             {showFilters && (
               <>
                 <Skeleton className="h-10 w-[150px]" />
@@ -68,22 +66,25 @@ export function TableSkeleton({
               ))}
             </TableRow>
           </TableHeader>
-          
+
           {/* Table Body Skeleton */}
           <TableBody>
             {Array.from({ length: rows }).map((_, rowIndex) => (
               <TableRow key={rowIndex}>
                 {Array.from({ length: columns }).map((_, colIndex) => (
                   <TableCell key={colIndex} className="h-16">
-                    <Skeleton 
+                    <Skeleton
                       className={cn(
-                        "h-4",
+                        'h-4',
                         // Vary the width for more realistic appearance
-                        colIndex === 0 ? "w-8" : // First column (usually checkbox)
-                        colIndex === 1 ? "w-24" : // Second column (usually ID or name)
-                        colIndex === columns - 1 ? "w-16" : // Last column (usually actions)
-                        "w-full" // Other columns
-                      )} 
+                        colIndex === 0
+                          ? 'w-8' // First column (usually checkbox)
+                          : colIndex === 1
+                            ? 'w-24' // Second column (usually ID or name)
+                            : colIndex === columns - 1
+                              ? 'w-16' // Last column (usually actions)
+                              : 'w-full' // Other columns
+                      )}
                     />
                   </TableCell>
                 ))}
@@ -127,7 +128,7 @@ export function CompactTableSkeleton({
   className,
 }: Pick<TableSkeletonProps, 'columns' | 'rows' | 'className'>) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

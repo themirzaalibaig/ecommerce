@@ -14,10 +14,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    
+
     // Remove existing theme classes
     root.classList.remove('light', 'dark');
-    
+
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     if (theme !== 'system') return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = () => {
       const root = window.document.documentElement;
       root.classList.remove('light', 'dark');

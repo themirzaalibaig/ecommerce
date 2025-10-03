@@ -1,5 +1,5 @@
-import { combineReducers } from "redux";
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
@@ -9,12 +9,12 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import uiReducer from "./slices/uiSlice";
-import authReducer from "./slices/authSlice";
-import { useDispatch, useSelector } from "react-redux";
-import type { TypedUseSelectorHook } from "react-redux";
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import uiReducer from './slices/uiSlice';
+import authReducer from './slices/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import type { TypedUseSelectorHook } from 'react-redux';
 
 const rootReducer = combineReducers({
   ui: uiReducer,
@@ -25,9 +25,9 @@ const rootReducer = combineReducers({
 export type RootState = ReturnType<typeof rootReducer>;
 
 const persistConfig = {
-  key: "root",
+  key: 'root',
   storage,
-  whitelist: ["ui", "auth"],
+  whitelist: ['ui', 'auth'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

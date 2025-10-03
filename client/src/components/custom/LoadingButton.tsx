@@ -1,7 +1,7 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import type { VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
-import type { FC, ReactNode } from "react";
+import { Button, buttonVariants } from '@/components/ui/button';
+import type { VariantProps } from 'class-variance-authority';
+import { Loader2 } from 'lucide-react';
+import type { FC, ReactNode } from 'react';
 
 interface LoadingButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -15,7 +15,7 @@ interface LoadingButtonProps
 export const LoadingButton: FC<LoadingButtonProps> = ({
   children,
   isLoading = false,
-  loadingText = "Loading...",
+  loadingText = 'Loading...',
   disabled,
   ...props
 }) => {

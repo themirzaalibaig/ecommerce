@@ -1,17 +1,12 @@
-import axios from "axios";
-import type { AxiosInstance, Method } from "axios";
-import useSWR, { mutate } from "swr";
-import { toast } from "react-toastify";
-import { useState, useEffect } from "react";
-import { useAuth } from "./useAuth";
-import { z } from "zod";
-import { debounce as debounceFn } from "lodash";
-import type {
-  ApiResponse,
-  UseApiOptions,
-  RequestConfig,
-  ApiHookReturn,
-} from "../types/api";
+import axios from 'axios';
+import type { AxiosInstance, Method } from 'axios';
+import useSWR, { mutate } from 'swr';
+import { toast } from 'react-toastify';
+import { useState, useEffect } from 'react';
+import { useAuth } from './useAuth';
+import { z } from 'zod';
+import { debounce as debounceFn } from 'lodash';
+import type { ApiResponse, UseApiOptions, RequestConfig, ApiHookReturn } from '../types/api';
 
 // API Response Schema for runtime validation
 const ApiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
@@ -45,13 +40,13 @@ const ApiResponseSchema = <T>(dataSchema: z.ZodType<T>) =>
 
 // Create axios instance with baseURL from environment
 const createApiInstance = (): AxiosInstance => {
-  const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
   return axios.create({
     baseURL,
     timeout: 10000,
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
   });
 };
@@ -65,9 +60,9 @@ const apiInstance = createApiInstance();
  */
 export const setAuthToken = (token: string | null) => {
   if (token) {
-    apiInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    apiInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
-    delete apiInstance.defaults.headers.common["Authorization"];
+    delete apiInstance.defaults.headers.common['Authorization'];
   }
 };
 
@@ -78,10 +73,7 @@ export const setAuthToken = (token: string | null) => {
  * @param options - Configuration options for the hook
  * @returns An object with SWR data, response, loading states, and request methods
  */
-export function useApi<T>(
-  endpoint: string,
-  options: UseApiOptions<T> = {}
-): ApiHookReturn<T> {
+export function useApi<T>(endpoint: string, options: UseApiOptions<T> = {}): ApiHookReturn<T> {
   const {
     immediate = true,
     auth = false,
@@ -93,9 +85,9 @@ export function useApi<T>(
     onError,
     debounce: enableDebounce = false, // Enable/disable debouncing
     debounceDelay = 300, // Debounce delay in ms
-  } = options
-  const [isMutating, setIsMutating] = useState(false)
-  const { token } = useAuth()
+  } = options;
+  const [isMutating, setIsMutating] = useState(false);
+  const { token } = useAuth();
 
   // Apply token if auth is true
   if (auth && token) {
@@ -118,9 +110,7 @@ export function useApi<T>(
   );
 
   // SWR fetcher with optional debouncing and retries
-  const fetcher = (
-    endpoint: string
-  ): Promise<{ data: T; response: ApiResponse<T> }> => {
+  const fetcher = (endpoint: string): Promise<{ data: T; response: ApiResponse<T> }> => {
     const { retryCount = 3, retryDelay = 1000 } = swrConfig || {};
     const fetchFn = async () => {
       let lastError: unknown;
@@ -132,9 +122,7 @@ export function useApi<T>(
             : { success: true, data: response.data };
           if (!parsed.success) {
             throw new Error(
-              `Invalid API response: ${
-                "error" in parsed ? parsed.error?.message : "Unknown error"
-              }`
+              `Invalid API response: ${'error' in parsed ? parsed.error?.message : 'Unknown error'}`
             );
           }
           return { data: parsed.data.data as T, response: parsed.data };
@@ -194,7 +182,7 @@ export function useApi<T>(
     const abortController = new AbortController();
     setIsMutating(true);
 
-    if (optimisticUpdate && method !== "get") {
+    if (optimisticUpdate && method !== 'get') {
       await mutate(endpoint, optimisticUpdate, false); // Optimistic update
     }
 
@@ -214,26 +202,18 @@ export function useApi<T>(
           : { success: true, data: response.data };
         if (!parsed.success) {
           throw new Error(
-            `Invalid API response: ${
-              "error" in parsed ? parsed.error?.message : "Unknown error"
-            }`
+            `Invalid API response: ${'error' in parsed ? parsed.error?.message : 'Unknown error'}`
           );
         }
 
         if (message && !silent && parsed.data.success) {
-          toast.success(
-            parsed.data.message ?? "Operation completed successfully",
-            toastOptions
-          );
+          toast.success(parsed.data.message ?? 'Operation completed successfully', toastOptions);
         }
         await mutate(endpoint); // Revalidate cache
         return { data: parsed.data.data as R, response: parsed.data as ApiResponse<R> };
       } catch (error: unknown) {
-        if (
-          axios.isCancel(error) ||
-          (error instanceof Error && error.name === "AbortError")
-        ) {
-          console.log("Request cancelled:", endpoint);
+        if (axios.isCancel(error) || (error instanceof Error && error.name === 'AbortError')) {
+          console.log('Request cancelled:', endpoint);
           return Promise.reject(error);
         }
         lastError = error;
@@ -247,27 +227,24 @@ export function useApi<T>(
       }
     }
 
-    let errMsg = { message: "An error occurred" };
+    let errMsg = { message: 'An error occurred' };
     let statusCode: number | undefined;
     if (axios.isAxiosError(lastError)) {
       statusCode = lastError.response?.status;
       errMsg = lastError.response?.data || { message: lastError.message };
       if (statusCode === 401) {
-        errMsg.message = "Unauthorized: Please log in again";
+        errMsg.message = 'Unauthorized: Please log in again';
       } else if (statusCode === 403) {
-        errMsg.message = "Forbidden: You lack permission";
+        errMsg.message = 'Forbidden: You lack permission';
       } else if (statusCode === 429) {
-        errMsg.message = "Too Many Requests: Please try again later";
+        errMsg.message = 'Too Many Requests: Please try again later';
       }
     } else {
       errMsg.message = (lastError as Error).message;
     }
 
     if (!silent) {
-      toast.error(
-        `${errMsg.message}`,
-        toastOptions
-      );
+      toast.error(`${errMsg.message}`, toastOptions);
     }
 
     if (onError) {
@@ -286,7 +263,7 @@ export function useApi<T>(
    * @returns Promise resolving to an object with data and full response
    */
   const get = <R = T>(endpoint: string, cfg: RequestConfig = {}) =>
-    request<R>("get", endpoint, undefined, cfg);
+    request<R>('get', endpoint, undefined, cfg);
 
   /**
    * Performs a POST request
@@ -297,7 +274,7 @@ export function useApi<T>(
    * @returns Promise resolving to an object with data and full response
    */
   const post = <R = T>(endpoint: string, body: unknown, cfg: RequestConfig = {}) =>
-    request<R>("post", endpoint, body, cfg);
+    request<R>('post', endpoint, body, cfg);
 
   /**
    * Performs a PUT request
@@ -308,7 +285,7 @@ export function useApi<T>(
    * @returns Promise resolving to an object with data and full response
    */
   const put = <R = T>(endpoint: string, body: unknown, cfg: RequestConfig = {}) =>
-    request<R>("put", endpoint, body, cfg);
+    request<R>('put', endpoint, body, cfg);
 
   /**
    * Performs a PATCH request
@@ -318,11 +295,8 @@ export function useApi<T>(
    * @param cfg - Request configuration
    * @returns Promise resolving to an object with data and full response
    */
-  const patch = <R = T>(
-    endpoint: string,
-    body: unknown,
-    cfg: RequestConfig = {}
-  ) => request<R>("patch", endpoint, body, cfg);
+  const patch = <R = T>(endpoint: string, body: unknown, cfg: RequestConfig = {}) =>
+    request<R>('patch', endpoint, body, cfg);
 
   /**
    * Performs a DELETE request
@@ -332,7 +306,7 @@ export function useApi<T>(
    * @returns Promise resolving to an object with data and full response
    */
   const del = <R = T>(endpoint: string, cfg: RequestConfig = {}) =>
-    request<R>("delete", endpoint, undefined, cfg);
+    request<R>('delete', endpoint, undefined, cfg);
 
   /**
    * Invalidates one or more SWR cache keys
@@ -358,13 +332,12 @@ export function useApi<T>(
     onProgress?: (percentage: number) => void
   ): Promise<{ data: T; response: ApiResponse<T> }> => {
     const formData = new FormData();
-    formData.append("file", file);
-    return request<T>("post", endpoint, formData, {
+    formData.append('file', file);
+    return request<T>('post', endpoint, formData, {
       config: {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: onProgress
-          ? (event) =>
-              onProgress(Math.round((100 * event.loaded) / event.total!))
+          ? (event) => onProgress(Math.round((100 * event.loaded) / event.total!))
           : undefined,
       },
     });
@@ -383,23 +356,21 @@ export function useApi<T>(
     try {
       const results = await Promise.all(
         requests.map(({ method, endpoint, data }) =>
-          requestInstance
-            .request<ApiResponse<R>>({ method, url: endpoint, data })
-            .then((res) => {
-              if (dataSchema) {
-                const parsed = ApiResponseSchema(dataSchema).safeParse(res.data);
-                if (!parsed.success) {
-                  throw new Error(
-                    `Invalid API response: ${
-                      "error" in parsed ? parsed.error?.message : "Unknown error"
-                    }`
-                  );
-                }
-                return { data: parsed.data.data as R, response: parsed.data };
-              } else {
-                return { data: res.data.data as R, response: res.data };
+          requestInstance.request<ApiResponse<R>>({ method, url: endpoint, data }).then((res) => {
+            if (dataSchema) {
+              const parsed = ApiResponseSchema(dataSchema).safeParse(res.data);
+              if (!parsed.success) {
+                throw new Error(
+                  `Invalid API response: ${
+                    'error' in parsed ? parsed.error?.message : 'Unknown error'
+                  }`
+                );
               }
-            })
+              return { data: parsed.data.data as R, response: parsed.data };
+            } else {
+              return { data: res.data.data as R, response: res.data };
+            }
+          })
         )
       );
       return results as { data: R; response: ApiResponse<R> }[];
@@ -409,7 +380,7 @@ export function useApi<T>(
           ? error.response.data
           : { message: (error as Error).message };
 
-      toast.error(errMsg.message || "Batch request failed", toastOptions);
+      toast.error(errMsg.message || 'Batch request failed', toastOptions);
       throw error;
     } finally {
       setIsMutating(false);

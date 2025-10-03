@@ -9,7 +9,6 @@ export type Role = 'admin' | 'user';
 
 export type Size = 'xs' | 's' | 'm' | 'l' | 'xl';
 
-
 export interface User extends BaseModel {
   username: string;
   email: string;

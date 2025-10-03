@@ -3,7 +3,7 @@ import type {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   flexRender,
   getCoreRowModel,
@@ -13,7 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
 import {
   Table,
@@ -39,10 +39,10 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/";
+} from '@/components/ui/';
 
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import {
   CalendarIcon,
   Download,
@@ -56,13 +56,13 @@ import {
   X,
   Columns3,
   RotateCcw,
-} from "lucide-react";
-import Papa from "papaparse"; // For CSV export (install papaparse)
-import * as XLSX from "xlsx"; // For Excel export (install xlsx)
-import jsPDF from "jspdf"; // For PDF export (install jspdf)
-import autoTable from "jspdf-autotable"; // For PDF tables (install jspdf-autotable)
-import { TableSkeleton } from "./TableSkeleton";
-import { useEffect, useMemo, useState, useRef } from "react";
+} from 'lucide-react';
+import Papa from 'papaparse'; // For CSV export (install papaparse)
+import * as XLSX from 'xlsx'; // For Excel export (install xlsx)
+import jsPDF from 'jspdf'; // For PDF export (install jspdf)
+import autoTable from 'jspdf-autotable'; // For PDF tables (install jspdf-autotable)
+import { TableSkeleton } from './TableSkeleton';
+import { useEffect, useMemo, useState, useRef } from 'react';
 
 // Filter configuration interface
 interface FilterConfig {
@@ -92,25 +92,25 @@ export function DataTable<T extends Record<string, any>>({
   columns,
   filters = [],
   enableDateFilter = true,
-  dateFilterColumn = "createdAt",
+  dateFilterColumn = 'createdAt',
   enableGlobalSearch = true,
   enableExport = true,
   enableColumnVisibility = true,
   enableRowSelection = true,
   onRowSelect,
   loading = false,
-  exportFileName = "data",
+  exportFileName = 'data',
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
 
   // Dynamic filter states
-  const [filterValues, setFilterValues] = useState<
-    Record<string, string | undefined>
-  >(filters.reduce((acc, filter) => ({ ...acc, [filter.id]: undefined }), {}));
+  const [filterValues, setFilterValues] = useState<Record<string, string | undefined>>(
+    filters.reduce((acc, filter) => ({ ...acc, [filter.id]: undefined }), {})
+  );
 
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
@@ -135,12 +135,12 @@ export function DataTable<T extends Record<string, any>>({
     if (!enableRowSelection) return columns;
 
     const selectColumn: ColumnDef<T> = {
-      id: "select",
+      id: 'select',
       header: ({ table }) => (
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
@@ -181,19 +181,26 @@ export function DataTable<T extends Record<string, any>>({
       globalFilter,
     },
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "includesString",
+    globalFilterFn: 'includesString',
     // Custom filtering for date range and boolean values
     filterFns: {
       dateRange: (row, id, filterValue) => {
         const rawValue = row.getValue(id);
         // Convert string dates to Date objects for comparison
-        const rowValue = rawValue instanceof Date ? rawValue : (typeof rawValue === 'string' || typeof rawValue === 'number') ? new Date(rawValue) : new Date();
+        const rowValue =
+          rawValue instanceof Date
+            ? rawValue
+            : typeof rawValue === 'string' || typeof rawValue === 'number'
+              ? new Date(rawValue)
+              : new Date();
         const { from, to } = filterValue;
         if (!from && !to) return true;
 
         // Ensure we're comparing dates properly
         const rowDate = new Date(rowValue.getFullYear(), rowValue.getMonth(), rowValue.getDate());
-        const fromDate = from ? new Date(from.getFullYear(), from.getMonth(), from.getDate()) : null;
+        const fromDate = from
+          ? new Date(from.getFullYear(), from.getMonth(), from.getDate())
+          : null;
         const toDate = to ? new Date(to.getFullYear(), to.getMonth(), to.getDate()) : null;
 
         if (fromDate && rowDate < fromDate) return false;
@@ -227,7 +234,7 @@ export function DataTable<T extends Record<string, any>>({
       if (enableDateFilter && (dateRange.from || dateRange.to)) {
         newFilters.push({
           id: dateFilterColumn,
-          value: dateRange
+          value: dateRange,
         });
       }
 
@@ -251,12 +258,10 @@ export function DataTable<T extends Record<string, any>>({
 
   // Export functions
   const exportToCSV = () => {
-    const csv = Papa.unparse(
-      table.getFilteredRowModel().rows.map((row) => row.original)
-    );
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const csv = Papa.unparse(table.getFilteredRowModel().rows.map((row) => row.original));
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
     link.download = `${exportFileName}.csv`;
     link.click();
@@ -267,7 +272,7 @@ export function DataTable<T extends Record<string, any>>({
       table.getFilteredRowModel().rows.map((row) => row.original)
     );
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
     XLSX.writeFile(wb, `${exportFileName}.xlsx`);
   };
 
@@ -275,14 +280,12 @@ export function DataTable<T extends Record<string, any>>({
     const doc = new jsPDF();
 
     // Get visible columns (excluding select column)
-    const visibleColumns = table
-      .getVisibleLeafColumns()
-      .filter((col) => col.id !== "select");
+    const visibleColumns = table.getVisibleLeafColumns().filter((col) => col.id !== 'select');
 
     // Create headers
     const headers = visibleColumns.map((col) => {
       const header = col.columnDef.header;
-      return typeof header === "string" ? header : col.id;
+      return typeof header === 'string' ? header : col.id;
     });
 
     // Create body data by extracting actual values
@@ -291,9 +294,9 @@ export function DataTable<T extends Record<string, any>>({
         const cellValue = row.getValue(col.id);
         // Handle different data types
         if (cellValue instanceof Date) {
-          return format(cellValue, "PPP");
+          return format(cellValue, 'PPP');
         }
-        return String(cellValue || "");
+        return String(cellValue || '');
       });
     });
 
@@ -328,7 +331,7 @@ export function DataTable<T extends Record<string, any>>({
             <div className="relative w-full sm:w-auto">
               <Input
                 placeholder="Search..."
-                value={globalFilter ?? ""}
+                value={globalFilter ?? ''}
                 onChange={(event) => setGlobalFilter(event.target.value)}
                 className="w-full sm:min-w-[200px] pr-8"
               />
@@ -337,7 +340,7 @@ export function DataTable<T extends Record<string, any>>({
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100 rounded-full"
-                  onClick={() => setGlobalFilter("")}
+                  onClick={() => setGlobalFilter('')}
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -349,8 +352,8 @@ export function DataTable<T extends Record<string, any>>({
           {filters.map((filter) => (
             <div key={filter.id} className="relative w-full sm:w-auto">
               <Select
-                key={filterValues[filter.id] || "empty"}
-                value={filterValues[filter.id] || ""}
+                key={filterValues[filter.id] || 'empty'}
+                value={filterValues[filter.id] || ''}
                 onValueChange={(value) =>
                   setFilterValues((prev) => ({ ...prev, [filter.id]: value }))
                 }
@@ -392,10 +395,10 @@ export function DataTable<T extends Record<string, any>>({
               <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button
-                    variant={"outline"}
+                    variant={'outline'}
                     className={cn(
-                      "w-full sm:w-auto justify-start text-left font-normal pr-10! min-h-[40px]",
-                      !dateRange && "text-muted-foreground"
+                      'w-full sm:w-auto justify-start text-left font-normal pr-10! min-h-[40px]',
+                      !dateRange && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
@@ -404,32 +407,25 @@ export function DataTable<T extends Record<string, any>>({
                         dateRange.to ? (
                           <>
                             <span className="hidden sm:inline">
-                              {format(dateRange.from, "LLL dd, y")} -{" "}
-                              {format(dateRange.to, "LLL dd, y")}
+                              {format(dateRange.from, 'LLL dd, y')} -{' '}
+                              {format(dateRange.to, 'LLL dd, y')}
                             </span>
                             <span className="sm:hidden">
-                              {format(dateRange.from, "MMM dd")} -{" "}
-                              {format(dateRange.to, "MMM dd")}
+                              {format(dateRange.from, 'MMM dd')} - {format(dateRange.to, 'MMM dd')}
                             </span>
                           </>
                         ) : (
                           <>
                             <span className="hidden sm:inline">
-                              {format(dateRange.from, "LLL dd, y")}
+                              {format(dateRange.from, 'LLL dd, y')}
                             </span>
-                            <span className="sm:hidden">
-                              {format(dateRange.from, "MMM dd")}
-                            </span>
+                            <span className="sm:hidden">{format(dateRange.from, 'MMM dd')}</span>
                           </>
                         )
                       ) : (
-                        <span className="hidden sm:inline">
-                          Pick a date range
-                        </span>
+                        <span className="hidden sm:inline">Pick a date range</span>
                       )}
-                      {!dateRange?.from && (
-                        <span className="sm:hidden">Date range</span>
-                      )}
+                      {!dateRange?.from && <span className="sm:hidden">Date range</span>}
                     </span>
                   </Button>
                 </PopoverTrigger>
@@ -458,9 +454,7 @@ export function DataTable<T extends Record<string, any>>({
                   variant="ghost"
                   size="sm"
                   className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 p-0 hover:bg-gray-100 rounded-full z-10"
-                  onClick={() =>
-                    setDateRange({ from: undefined, to: undefined })
-                  }
+                  onClick={() => setDateRange({ from: undefined, to: undefined })}
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -472,10 +466,7 @@ export function DataTable<T extends Record<string, any>>({
           {enableColumnVisibility && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto gap-2 min-h-[40px]"
-                >
+                <Button variant="outline" className="w-full sm:w-auto gap-2 min-h-[40px]">
                   <Columns3 className="h-4 w-4" />
                   <span className="hidden sm:inline">Columns</span>
                   <span className="sm:hidden">Cols</span>
@@ -508,9 +499,7 @@ export function DataTable<T extends Record<string, any>>({
                         key={column.id}
                         className="capitalize flex items-center gap-2 px-2 py-2"
                         checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
+                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
                       >
                         <span className="ml-6 flex-1">{column.id}</span>
                       </DropdownMenuCheckboxItem>
@@ -524,10 +513,7 @@ export function DataTable<T extends Record<string, any>>({
           {enableExport && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto min-h-[40px]"
-                >
+                <Button variant="outline" className="w-full sm:w-auto min-h-[40px]">
                   <Download className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Export</span>
                   <span className="sm:hidden">Export</span>
@@ -564,27 +550,20 @@ export function DataTable<T extends Record<string, any>>({
                       {header.isPlaceholder ? null : (
                         <div
                           className={cn(
-                            "flex items-center space-x-2",
+                            'flex items-center space-x-2',
                             canSort &&
-                              "cursor-pointer select-none hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 -mx-2 -my-1 transition-colors"
+                              'cursor-pointer select-none hover:bg-accent hover:text-accent-foreground rounded-md px-2 py-1 -mx-2 -my-1 transition-colors'
                           )}
-                          onClick={
-                            canSort
-                              ? header.column.getToggleSortingHandler()
-                              : undefined
-                          }
+                          onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                         >
                           <span>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            {flexRender(header.column.columnDef.header, header.getContext())}
                           </span>
                           {canSort && (
                             <span className="ml-2">
-                              {sortDirection === "asc" ? (
+                              {sortDirection === 'asc' ? (
                                 <ArrowUp className="h-4 w-4" />
-                              ) : sortDirection === "desc" ? (
+                              ) : sortDirection === 'desc' ? (
                                 <ArrowDown className="h-4 w-4" />
                               ) : (
                                 <ArrowUpDown className="h-4 w-4 opacity-50" />
@@ -602,26 +581,17 @@ export function DataTable<T extends Record<string, any>>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={tableColumns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={tableColumns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -636,7 +606,7 @@ export function DataTable<T extends Record<string, any>>({
           {enableRowSelection && (
             <div className="text-sm text-muted-foreground order-2 sm:order-1">
               <span className="hidden sm:inline">
-                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredSelectedRowModel().rows.length} of{' '}
                 {table.getFilteredRowModel().rows.length} row(s) selected.
               </span>
               <span className="sm:hidden">
@@ -657,9 +627,7 @@ export function DataTable<T extends Record<string, any>>({
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue
-                  placeholder={table.getState().pagination.pageSize}
-                />
+                <SelectValue placeholder={table.getState().pagination.pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -675,8 +643,7 @@ export function DataTable<T extends Record<string, any>>({
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
           <div className="flex items-center justify-center text-sm font-medium order-2 sm:order-1">
             <span className="hidden sm:inline">
-              Page {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
             </span>
             <span className="sm:hidden">
               {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
