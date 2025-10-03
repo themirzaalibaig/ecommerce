@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build outputs
+dist
+build
+.vite
+coverage
+
+# Logs
+*.log
+logs
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode
+.idea
+
+# Misc
+*.min.js
+*.min.css
+.DS_Store
+
